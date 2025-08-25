@@ -12,7 +12,10 @@ class ApiKeyGuard
         $provided = $request->header('X-API-Key');
         $expected = config('services.health.key');
 
-        abort_unless($provided && hash_equals($expected, $provided), 401, 'Unauthorized');
+        if (! $provided || ! hash_equals($expected, $provided)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         return $next($request);
     }
 }

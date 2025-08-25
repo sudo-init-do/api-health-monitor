@@ -51,7 +51,7 @@ class Kernel extends HttpKernel
         'throttle'            => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'            => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
-        // our custom API key guard
+        // Custom API key guard used by /api routes
         'api.key'             => \App\Http\Middleware\ApiKeyGuard::class,
     ];
 }
