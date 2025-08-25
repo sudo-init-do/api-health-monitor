@@ -21,17 +21,24 @@ jobs:
           extensions: mbstring, pdo, sqlite, bcmath
           coverage: none
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
       - name: Copy .env
         run: cp .env.example .env
 
-      - name: Generate key
+      - name: Generate app key
         run: php artisan key:generate
+
+      - name: Prepare SQLite database file
+        run: mkdir -p database && touch database/database.sqlite
 
       - name: Run migrations
         run: php artisan migrate --force
 
+      # If any tests or pages expect demo rows, uncomment:
+      # - name: Seed database
+      #   run: php artisan db:seed --force
+
       - name: Run tests
-        run: php artisan test --without-tty
+        run: php artisan test --without-tty --no-interaction
