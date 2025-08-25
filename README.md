@@ -2,15 +2,105 @@
 
 API Health Monitor is a Laravel application for automated monitoring of HTTP APIs and web services. It tracks uptime, latency, and errors, manages incidents, and provides secure REST endpoints and a dashboard for real-time status.
 ## Features
-- Service CRUD (create, read, update, delete)
-- Automated and manual health checks
-- Incident tracking and resolution
 ## Installation & Setup
-1. Clone the repository:
+
+1. **Clone the repository**
 	```sh
-2. Install dependencies:
+	git clone https://github.com/sudo-init-do/api-health-monitor.git
+	cd api-health-monitor
+	```
+2. **Install dependencies**
 	```sh
 	composer install
+	```
+3. **Configure environment**
+	```sh
+	cp .env.example .env
+	php artisan key:generate
+	# Edit .env and set HEALTH_API_KEY
+	```
+4. **Database setup**
+	```sh
+	touch database/database.sqlite
+	php artisan migrate
+	php artisan db:seed # optional
+	```
+5. **Start the application**
+	```sh
+	php artisan serve
+	```
+
+## Usage Examples
+
+All API endpoints require the `X-API-Key` header.
+
+**List services**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services
+```
+
+**Create a service**
+```sh
+curl -X POST -H "X-API-Key: your_key" -H "Content-Type: application/json" \
+  -d '{"name":"Demo API","method":"GET","url":"https://example.com/health","expected_status":200,"max_latency_ms":1000,"cron":"* * * * *","enabled":true}' \
+  http://localhost:8000/api/services
+```
+
+**Trigger health check**
+```sh
+curl -X POST -H "X-API-Key: your_key" http://localhost:8000/api/services/1/check
+```
+
+**List checks & incidents**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/checks
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/incidents
+```
+
+## Environment Variables
+
+- `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`: Laravel settings
+- `DB_CONNECTION`, `DB_DATABASE`: Database config (default: SQLite)
+- `HEALTH_API_KEY`: API key for endpoints
+- `ALERT_SLACK_WEBHOOK`: Slack webhook for alerts
+- `QUEUE_CONNECTION`: Queue driver
+- `CACHE_STORE`: Cache driver
+
+See `.env.example` for all options.
+
+## Running Background Workers
+
+- **Queue worker**
+  ```sh
+  php artisan queue:work
+  ```
+- **Scheduler**
+  ```sh
+  php artisan schedule:work
+  # Or manually:
+  php artisan health:dispatch
+  ```
+
+## Testing
+
+Run all tests:
+```sh
+php artisan test
+```
+Tests are in `tests/Feature` and `tests/Unit`.
+
+## Roadmap / Possible Improvements
+
+- Add more notification channels (email, SMS)
+- Real-time dashboard updates
+- User authentication and roles
+- Service dependency mapping
+- Advanced incident analytics
+- Distributed/multi-region checks
+
+## License
+
+MIT License. See `LICENSE` file.
 3. Configure environment:
 	```sh
 	cp .env.example .env
