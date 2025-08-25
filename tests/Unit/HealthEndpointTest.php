@@ -1,16 +1,19 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class HealthEndpointTest extends TestCase
 {
-    /**
-     * A basic unit test example.
-     */
-    public function test_example(): void
+    public function test_api_health_returns_success(): void
     {
-        $this->assertTrue(true);
+        $res = $this->withHeaders([
+            'X-API-Key' => env('HEALTH_API_KEY', 'abcd1234'),
+            'Accept'    => 'application/json',
+        ])->get('/api/health');
+
+        $res->assertOk()
+            ->assertJsonStructure(['status', 'timestamp', 'data' => ['ok']]);
     }
 }
