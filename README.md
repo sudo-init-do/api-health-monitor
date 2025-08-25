@@ -11,16 +11,168 @@
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+# API Health Monitor
+
+API Health Monitor is a Laravel-based application designed to automate the monitoring of HTTP APIs and web services. It provides a robust platform for tracking service uptime, latency, and error rates, with automated incident management and alerting capabilities. The system is suitable for DevOps teams, SaaS providers, and anyone needing reliable API health checks and reporting.
+
+## How It Works
+
+1. **Service Registration**: Users register APIs or web services to be monitored, specifying details such as HTTP method, URL, expected status code, latency threshold, and a cron schedule for checks.
+2. **Automated Checks**: The system dispatches health checks at scheduled intervals or on demand. Each check records status, latency, HTTP response, and errors.
+3. **Incident Management**: Failed checks automatically open incidents, tracking downtime and errors. Incidents are resolved when subsequent checks pass.
+4. **API & Dashboard**: All data is accessible via a REST API (protected by API key) and a dashboard view for quick status overview.
+5. **Alerting**: Optional Slack integration for real-time incident notifications.
+6. **Background Processing**: Health checks and incident management run as queued jobs for scalability and reliability.
+
+## Features
+
+- Service CRUD (create, read, update, delete)
+- Automated and manual health checks
+- Incident tracking and resolution
+- API key-protected REST endpoints
+- Slack alert integration
+- Dashboard view for service status
+- Background job processing and scheduling
+- Pagination for checks/incidents
+- Extensible configuration
+
+## Installation & Setup
+
+1. **Clone the repository**
+	 ```sh
+	 git clone https://github.com/sudo-init-do/api-health-monitor.git
+	 cd api-health-monitor
+	 ```
+2. **Install dependencies**
+	 ```sh
+	 composer install
+	 ```
+3. **Configure environment**
+	 - Copy `.env.example` to `.env` and set required values:
+		 ```sh
+		 cp .env.example .env
+		 ```
+	 - Generate an application key:
+		 ```sh
+		 php artisan key:generate
+		 ```
+	 - Set `HEALTH_API_KEY` in `.env` for API protection.
+4. **Database setup**
+	 - Ensure `DB_CONNECTION=sqlite` and create the database file:
+		 ```sh
+		 touch database/database.sqlite
+		 ```
+	 - Run migrations:
+		 ```sh
+		 php artisan migrate
+		 ```
+	 - (Optional) Seed demo data:
+		 ```sh
+		 php artisan db:seed
+		 ```
+5. **Start the application**
+	 ```sh
+	 php artisan serve
+	 ```
+
+## API Usage Examples
+
+All API endpoints require the `X-API-Key` header:
+```
+X-API-Key: <your_HEALTH_API_KEY>
+```
+
+### Service CRUD
+
+- **List services**
+	```sh
+	curl -H "X-API-Key: your_key" http://localhost:8000/api/services
+	```
+- **Create a service**
+	```sh
+	curl -X POST -H "X-API-Key: your_key" -H "Content-Type: application/json" \
+		-d '{"name":"Demo API","method":"GET","url":"https://example.com/health","expected_status":200,"max_latency_ms":1000,"cron":"* * * * *","enabled":true}' \
+		http://localhost:8000/api/services
+	```
+- **Show service details**
+	```sh
+	curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1
+	```
+- **Update a service**
+	```sh
+	curl -X PUT -H "X-API-Key: your_key" -H "Content-Type: application/json" \
+		-d '{"enabled":false}' \
+		http://localhost:8000/api/services/1
+	```
+- **Delete a service**
+	```sh
+	curl -X DELETE -H "X-API-Key: your_key" http://localhost:8000/api/services/1
+	```
+
+### Trigger Health Check
+
+```sh
+curl -X POST -H "X-API-Key: your_key" http://localhost:8000/api/services/1/check
+```
+
+### List Checks & Incidents
+
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/checks
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/incidents
+```
+
+## Environment Variables
+
+Key variables in `.env`:
+
+- `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`: Standard Laravel settings.
+- `DB_CONNECTION`, `DB_DATABASE`: Database configuration (default: SQLite).
+- `HEALTH_API_KEY`: API key for securing endpoints.
+- `ALERT_SLACK_WEBHOOK`: Slack webhook for incident notifications.
+- `QUEUE_CONNECTION`: Queue driver (default: database).
+- `CACHE_STORE`: Cache driver (default: database).
+
+See `.env.example` for all options.
+
+## Running Background Workers
+
+- **Queue Worker**: Processes health check jobs.
+	```sh
+	php artisan queue:work
+	```
+- **Scheduler**: Dispatches due checks based on cron expressions.
+	```sh
+	php artisan schedule:work
+	```
+	Or run the command manually:
+	```sh
+	php artisan health:dispatch
+	```
+
+## Testing
+
+- **Run all tests**
+	```sh
+	php artisan test
+	```
+- Feature and unit tests are located in `tests/Feature` and `tests/Unit`.
+
+## Roadmap / Possible Improvements
+
+- Add support for additional notification channels (email, SMS)
+- Enhance dashboard with real-time updates and charts
+- Implement user authentication and roles
+- Add service dependency mapping and impact analysis
+- Improve incident analytics and reporting
+- Support for distributed checks and multi-region monitoring
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
