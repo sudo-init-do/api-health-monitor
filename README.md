@@ -1,3 +1,52 @@
+# API Health Monitor
+
+API Health Monitor is a Laravel application for automated monitoring of HTTP APIs and web services. It tracks uptime, latency, and errors, manages incidents, and provides secure REST endpoints and a dashboard for real-time status.
+## Features
+- Service CRUD (create, read, update, delete)
+- Automated and manual health checks
+- Incident tracking and resolution
+## Installation & Setup
+1. Clone the repository:
+	```sh
+2. Install dependencies:
+	```sh
+	composer install
+3. Configure environment:
+	```sh
+	cp .env.example .env
+4. Database setup:
+	```sh
+	touch database/database.sqlite
+5. Start the application:
+	```sh
+	php artisan serve
+## Usage Examples
+All API endpoints require the `X-API-Key` header.
+```sh
+**List services**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services
+**Create a service**
+```sh
+curl -X POST -H "X-API-Key: your_key" -H "Content-Type: application/json" \
+**Trigger health check**
+```sh
+curl -X POST -H "X-API-Key: your_key" http://localhost:8000/api/services/1/check
+## Environment Variables
+- `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`: Laravel settings
+- `DB_CONNECTION`, `DB_DATABASE`: Database config (default: SQLite)
+## Running Background Workers
+- Queue worker:
+	```sh
+	php artisan queue:work
+## Testing
+Run all tests:
+```sh
+## Roadmap / Possible Improvements
+- Add more notification channels (email, SMS)
+- Real-time dashboard updates
+## License
+MIT License. See `LICENSE` file.
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
