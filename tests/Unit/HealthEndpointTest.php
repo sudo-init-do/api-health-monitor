@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class HealthEndpointTest extends TestCase
 {
-    public function test_api_health_returns_success(): void
+    public function test_health_endpoint_returns_success(): void
     {
         $res = $this->withHeaders([
             'X-API-Key' => env('HEALTH_API_KEY', 'abcd1234'),
@@ -14,6 +14,7 @@ class HealthEndpointTest extends TestCase
         ])->get('/api/health');
 
         $res->assertOk()
-            ->assertJsonStructure(['status', 'timestamp', 'data' => ['ok']]);
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.ok', true);
     }
 }
