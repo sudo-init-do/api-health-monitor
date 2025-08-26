@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class HealthEndpointTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
+    public function test_health_endpoint_returns_success(): void
     {
-        $response = $this->get('/');
+        $res = $this->withHeaders([
+            'X-API-Key' => env('HEALTH_API_KEY', 'abcd1234'),
+            'Accept'    => 'application/json',
+        ])->get('/api/health');
 
-        $response->assertStatus(200);
+        $res->assertOk()
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.ok', true);
     }
 }
