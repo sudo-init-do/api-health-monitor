@@ -29,6 +29,125 @@ API Health Monitor is a Laravel application for automated monitoring of HTTP API
 	```sh
 	php artisan serve
 	```
+	
+# API Health Monitor
+
+API Health Monitor is a Laravel application for automated monitoring of HTTP APIs and web services. It provides service CRUD, scheduled and queued health checks, incident tracking, Slack alerts, and a secure dashboard. Designed for DevOps teams and SaaS providers who need reliable, extensible API health reporting and incident management.
+
+## Features
+- Service CRUD (create, read, update, delete)
+- Queued health checks (background jobs)
+- Scheduler for periodic checks (cron-based)
+- Incident tracking and resolution
+- Slack alert integration (optional)
+- API key middleware for endpoint protection
+- Dashboard view for service status
+
+## Installation & Setup
+1. **Clone the repository**
+	```sh
+	git clone https://github.com/sudo-init-do/api-health-monitor.git
+	cd api-health-monitor
+	```
+2. **Install dependencies**
+	```sh
+	composer install
+	```
+3. **Configure environment**
+	```sh
+	cp .env.example .env
+	php artisan key:generate
+	# Edit .env and set HEALTH_API_KEY, ALERT_SLACK_WEBHOOK, etc.
+	```
+4. **Database setup**
+	```sh
+	touch database/database.sqlite
+	php artisan migrate
+	php artisan db:seed # optional
+	```
+5. **Run the application**
+	```sh
+	php artisan serve
+	```
+6. **Start background workers**
+	```sh
+	php artisan queue:work
+	php artisan schedule:work
+	```
+
+## Usage Examples
+All API endpoints require the `X-API-Key` header.
+
+**List services**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services
+```
+
+**Create a service**
+```sh
+curl -X POST -H "X-API-Key: your_key" -H "Content-Type: application/json" \
+  -d '{"name":"Demo API","method":"GET","url":"https://example.com/health","expected_status":200,"max_latency_ms":1000,"cron":"* * * * *","enabled":true}' \
+  http://localhost:8000/api/services
+```
+
+**Trigger health check**
+```sh
+curl -X POST -H "X-API-Key: your_key" http://localhost:8000/api/services/1/check
+```
+
+**List checks**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/checks
+```
+
+**List incidents**
+```sh
+curl -H "X-API-Key: your_key" http://localhost:8000/api/services/1/incidents
+```
+
+## Environment Variables
+
+- `APP_NAME`, `APP_ENV`, `APP_KEY`, `APP_URL`: Laravel app settings
+- `DB_CONNECTION`, `DB_DATABASE`: Database config (default: SQLite)
+- `HEALTH_API_KEY`: API key for endpoint protection
+- `ALERT_SLACK_WEBHOOK`: Slack webhook for incident alerts
+- `QUEUE_CONNECTION`: Queue driver (default: database)
+- `CACHE_STORE`: Cache driver (default: database)
+
+See `.env.example` for all options.
+
+## Background Workers
+
+- **Queue Worker**: Processes health check jobs
+  ```sh
+  php artisan queue:work
+  ```
+- **Scheduler**: Dispatches due checks based on cron expressions
+  ```sh
+  php artisan schedule:work
+  # Or manually:
+  php artisan health:dispatch
+  ```
+
+## Testing & CI
+
+- Run all tests:
+  ```sh
+  php artisan test
+  ```
+- Continuous Integration: GitHub Actions workflow included for automated testing on push and PR.
+
+## Roadmap / Possible Improvements
+- Add more notification channels (email, SMS)
+- Real-time dashboard updates
+- User authentication and roles
+- Service dependency mapping
+- Advanced incident analytics
+- Distributed/multi-region checks
+
+## License
+
+MIT License. See `LICENSE` file.
 
 ## Usage Examples
 
